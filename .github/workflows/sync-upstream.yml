@@ -1,4 +1,5 @@
 name: Sync upstream MyClash Mihomo script
+# Regenerate the published script whenever the personal patcher changes.
 
 on:
   workflow_dispatch:
