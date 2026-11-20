@@ -1,0 +1,59 @@
+name: Sync upstream MyClash Mihomo script
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream-mihomo
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out personal repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate customized script
+        run: python scripts/sync.py
+
+      - name: Check JavaScript syntax
+        run: node --check mihomoScript.js
+
+      - name: Verify personal settings
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s = Path("mihomoScript.js").read_text(encoding="utf-8")
+          required = ["name: '香港'", "name: '日本'", "name: '美国'", "name: '新加坡'", "name: '台湾'", "name: '韩国'", "name: '加拿大'", "name: '印度'", "name: '德国'", "name: '法国'", "name: '澳大利亚'", "name: '英国'", "name: 'VIP'", "flag: '🏝️'"]
+          missing = [x for x in required if x not in s]
+          if missing:
+              raise SystemExit("Missing custom settings: " + ", ".join(missing))
+          PY
+
+      - name: Commit generated script when changed
+        run: |
+          if git diff --quiet -- mihomoScript.js upstream.sha; then
+            echo "No upstream or customization changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mihomoScript.js upstream.sha
+          git commit -m "chore: sync upstream Mihomo script"
+          git push
