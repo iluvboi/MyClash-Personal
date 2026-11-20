@@ -52,12 +52,12 @@ jobs:
 
       - name: Commit generated script when changed
         run: |
-          if git diff --quiet -- mihomoScript.js upstream.sha; then
+          git add mihomoScript.js upstream.sha
+          if git diff --cached --quiet; then
             echo "No upstream or customization changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add mihomoScript.js upstream.sha
           git commit -m "chore: sync upstream Mihomo script"
           git push
