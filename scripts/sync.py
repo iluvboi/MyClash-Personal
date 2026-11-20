@@ -43,7 +43,7 @@ const regionDefinitions = [
     name: '台湾',
     flag: '🏝️',
     regex: /🏝️|台湾|台北|高雄|(?<![A-Za-z])TWN?(?![A-Za-z])|taiwan/i,
-    icon: '🏝️',
+    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/AsiaMap.svg',
   },
   {
     name: '韩国',
