@@ -1,2 +1,0 @@
-GitHub connector write test passed.
-This file can be removed after verification.
