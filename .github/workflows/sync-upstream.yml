@@ -2,6 +2,10 @@ name: Sync upstream MyClash Mihomo script
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-upstream.yml'
+      - 'scripts/sync.py'
   schedule:
     - cron: "17 3 * * *"
 
