@@ -144,7 +144,7 @@ def patch_options(source: str) -> str:
         raise RuntimeError("Upstream ruleOptionsEnable block not found; refusing to publish.")
     block = match.group(0)
     for key, value in OVERRIDES.items():
-        pattern = re.compile(r"(?m)^(\s*(?:['\"]" + re.escape(key) + r"['\"]|" + re.escape(key) + r")\s*:\s*)(true|false)(\s*,)(\s*//.*)?$")
+        pattern = re.compile(r"(?m)^([ \t]*(?:['\"]?" + re.escape(key) + r"['\"]?)[ \t]*:[ \t]*)(true|false)([ \t]*,?)([ \t]*(?://.*)?)$")
         updated, count = pattern.subn(lambda m: m.group(1) + str(value).lower() + m.group(3) + (m.group(4) or ""), block)
         if count == 0 and key == "优先国内DNS加速":
             block = block.replace("\n};", "\n  优先国内DNS加速: true,\n};")
