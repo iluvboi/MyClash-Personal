@@ -14,9 +14,9 @@ const regions = ['香港', '日本', '美国', '新加坡', '台湾', '韩国', 
 for (const name of regions) assert(source.includes(`name: '${name}'`), `missing region: ${name}`);
 assert(source.includes('common/AsiaMap.svg'), 'Taiwan icon customization missing');
 assert(source.includes('common/VIP.svg'), 'VIP icon customization missing');
-assert(source.includes('const activeRegionDefinitions = regionDefinitions.filter'), 'Bettbox region selection filter missing');
-assert(source.includes('[...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions]'), 'active regions are not used to build groups');
-assert(source.includes('activeRegionDefinitions.includes(region)'), 'active regions are not used by node filtering');
+assert(source.includes("flag: '🏝️'"), 'Taiwan flag customization missing');
+assert(source.includes('common/AsiaMap.svg'), 'Taiwan icon customization missing');
+assert(!source.includes('activeRegionDefinitions'), 'upstream region-selection logic must remain unchanged');
 
 // Execute the script in an isolated context and smoke-test main() with a minimal subscription.
 const sandbox = { console };
@@ -35,4 +35,4 @@ assert(Array.isArray(output['proxy-groups']) && output['proxy-groups'].length > 
 assert(Array.isArray(output.rules) && output.rules.length > 0, 'main() returned no rules');
 assert(output.dns && typeof output.dns === 'object', 'main() returned no DNS configuration');
 
-console.log('Personal script checks passed: syntax, 13 regions, custom icons, Bettbox region filtering, and main() smoke test.');
+console.log('Personal script checks passed: syntax, 13 regions, Taiwan flag/icon, unchanged upstream region logic, and main() smoke test.');
