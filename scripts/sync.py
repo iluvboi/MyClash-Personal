@@ -2,13 +2,12 @@
 """Generate the personal Mihomo script from the latest AIsouler/MyClash upstream."""
 from __future__ import annotations
 
-import json
 import re
+import subprocess
 import urllib.request
 from pathlib import Path
 
 UPSTREAM_RAW = "https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/mihomoScript.js"
-UPSTREAM_COMMIT_API = "https://api.github.com/repos/AIsouler/MyClash/commits/main"
 OUTPUT = Path("mihomoScript.js")
 SHA_FILE = Path("upstream.sha")
 
@@ -185,10 +184,18 @@ def patch_regions(source: str) -> str:
 
 def main() -> None:
     upstream = get_text(UPSTREAM_RAW)
-    commit_data = json.loads(get_text(UPSTREAM_COMMIT_API))
-    commit_sha = commit_data.get("sha")
-    if not isinstance(commit_sha, str) or len(commit_sha) < 40:
-        raise RuntimeError("Could not identify upstream commit SHA.")
+    # Use Git's public smart-HTTP endpoint instead of the unauthenticated
+    # GitHub REST API, which is subject to a low anonymous rate limit.
+    result = subprocess.run(
+        ["git", "ls-remote", "https://github.com/AIsouler/MyClash.git", "refs/heads/main"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    commit_sha = result.stdout.split()[0] if result.stdout.split() else None
+    if not isinstance(commit_sha, str) or len(commit_sha) != 40:
+        raise RuntimeError("Could not identify upstream main commit SHA via git ls-remote.")
     generated = patch_regions(patch_options(upstream))
 
     # Bettbox reads this top-level declaration to render its region checklist.
