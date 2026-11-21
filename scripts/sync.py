@@ -175,11 +175,15 @@ def patch_options(source: str) -> str:
             block = updated
     return source[:match.start()] + block + source[match.end():]
 
-def replace_once(source: str, old: str, new: str, label: str) -> str:
+def replace_exact(
+    source: str, old: str, new: str, *, expected_count: int, label: str
+) -> str:
     count = source.count(old)
-    if count != 1:
-        raise RuntimeError(f"Expected exactly one {label} anchor, found {count}; refusing to publish.")
-    return source.replace(old, new, 1)
+    if count != expected_count:
+        raise RuntimeError(
+            f"Expected exactly {expected_count} {label} anchors, found {count}; refusing to publish."
+        )
+    return source.replace(old, new)
 
 
 def patch_regions(source: str) -> str:
@@ -215,11 +219,15 @@ def main() -> None:
         "const allRegionDefinitions = [...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
         "allRegionDefinitions construction",
     )
-    generated = replace_once(
+    # The upstream predicate is used once while filtering raw proxies and once
+    # while assigning matched proxies to region groups; both must honor the
+    # user's enabled-region selection.
+    generated = replace_exact(
         generated,
         "regionDefinitions.includes(region)",
         "activeRegionDefinitions.includes(region)",
-        "region membership check",
+        expected_count=2,
+        label="region membership check",
     )
     required = ["const regionDefinitions = [", "default: true", "const activeRegionDefinitions = regionDefinitions.filter", "const allRegionDefinitions = [...activeRegionDefinitions", "activeRegionDefinitions.includes(region)", "common/AsiaMap.svg", "name: 'VIP'", "优先国内DNS加速: true"]
     for item in required:
