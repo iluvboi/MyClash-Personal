@@ -51,6 +51,9 @@ jobs:
               raise SystemExit("Missing custom settings: " + ", ".join(missing))
           PY
 
+      - name: Run personal regression tests
+        run: node Test/run-personal-tests.js
+
       - name: Commit generated script when changed
         run: |
           git add mihomoScript.js upstream.sha
