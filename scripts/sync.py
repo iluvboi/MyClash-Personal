@@ -202,11 +202,18 @@ def main() -> None:
     # Do not declare it here: a second top-level const causes a duplicate
     # declaration and prevents the managed script from executing.
     # Apply the selected regions consistently to strategy groups and proxy matching.
-    generated = generated.replace(
+    generated = replace_once(
+        generated,
         "const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
         "const allRegionDefinitions = [...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
+        "allRegionDefinitions construction",
     )
-    generated = generated.replace("regionDefinitions.includes(region)", "activeRegionDefinitions.includes(region)")
+    generated = replace_once(
+        generated,
+        "regionDefinitions.includes(region)",
+        "activeRegionDefinitions.includes(region)",
+        "region membership check",
+    )
     required = ["const regionDefinitions = [", "default: true", "const activeRegionDefinitions = regionDefinitions.filter", "const allRegionDefinitions = [...activeRegionDefinitions", "activeRegionDefinitions.includes(region)", "common/AsiaMap.svg", "name: 'VIP'", "优先国内DNS加速: true"]
     for item in required:
         if item not in generated:
