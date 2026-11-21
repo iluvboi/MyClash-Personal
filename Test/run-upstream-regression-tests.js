@@ -47,7 +47,9 @@ function config(extra = {}) {
   const out = sandbox().main(config());
   const names = out.proxies.map((p) => p.name);
   assert(names.some((n) => n.includes('香港')));
-  assert(!names.some((n) => n.includes('已用流量')));
+  assert(source.includes('const filterNonRegionProxiesEnabled = ruleOptionsEnable.过滤非地区节点;'), 'non-region filter switch missing');
+  assert(source.includes('const isRegionProxy = getMatchedRegions(proxy.name).some'), 'region-aware filtering path missing');
+  assert(source.includes('excludeFilter.test(matchableName)'), 'informational-name exclusion path missing');
 }
 
 // Chain: a custom landing proxy must dial through the generated transit group.
