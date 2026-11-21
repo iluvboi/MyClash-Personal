@@ -213,11 +213,12 @@ def main() -> None:
     # Do not declare it here: a second top-level const causes a duplicate
     # declaration and prevents the managed script from executing.
     # Apply the selected regions consistently to strategy groups and proxy matching.
-    generated = replace_once(
+    generated = replace_exact(
         generated,
         "const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
         "const allRegionDefinitions = [...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
-        "allRegionDefinitions construction",
+        expected_count=1,
+        label="allRegionDefinitions construction",
     )
     # The upstream predicate is used once while filtering raw proxies and once
     # while assigning matched proxies to region groups; both must honor the
