@@ -16,7 +16,7 @@ ADDITIONAL_REGIONS = r"""
   {
     name: '韩国',
     flag: '🇰🇷',
-    regex: /🇰🇷|(?<!北)(?:韩国|南韩)|首尔|汉城|仁川|春川|釜山|大邱|大田|光州|济州|(?<![A-Za-z])(?:KR|KOR|ICN|(?<!North\\s*)(?<!NORTH\\s*)(?:[Kk]orea|KOREA)(?:n|N)?|[Ss]eoul|SEOUL|[Ii]ncheon|INCHEON|[Cc]huncheon|CHUNCHEON|[Bb]usan|BUSAN|[Pp]usan|PUSAN|[Jj]eju|JEJU)(?![A-Za-z])/,
+    regex: /🇰🇷|(?<!北)(?:韩国|南韩)|首尔|汉城|仁川|春川|釜山|大邱|大田|光州|济州|(?<![A-Za-z])(?:KR|KOR|ICN|(?<!North\s*)(?<!NORTH\s*)(?:[Kk]orea|KOREA)(?:n|N)?|[Ss]eoul|SEOUL|[Ii]ncheon|INCHEON|[Cc]huncheon|CHUNCHEON|[Bb]usan|BUSAN|[Pp]usan|PUSAN|[Jj]eju|JEJU)(?![A-Za-z])/,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/South_Korea.svg',
   },
   {
@@ -52,7 +52,7 @@ ADDITIONAL_REGIONS = r"""
   {
     name: '英国',
     flag: '🇬🇧',
-    regex: /🇬🇧|英国|伦敦|曼彻斯特|伯明翰|格拉斯哥|爱丁堡|(?<![A-Za-z])(?:UK|GB|GBR)(?![A-Za-z])|united\\s*kingdom|great\\s*britain|britain|england/i,
+    regex: /🇬🇧|英国|伦敦|曼彻斯特|伯明翰|格拉斯哥|爱丁堡|(?<![A-Za-z])(?:UK|GB|GBR)(?![A-Za-z])|united\s*kingdom|great\s*britain|britain|england/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/United_Kingdom.svg',
   },
   {
@@ -68,7 +68,7 @@ def get_text(url: str) -> str:
 
 def patch_regions(source: str) -> str:
     pattern = re.compile(
-        r"(// 定义地区策略组\\s*\\nconst\\s+regionDefinitions\\s*=\\s*\\[)(.*?)(\\n\\];)",
+        r"(// 定义地区策略组\s*\nconst\s+regionDefinitions\s*=\s*\\[)(.*?)(\n\\];)",
         re.S,
     )
     matches = list(pattern.finditer(source))
@@ -76,7 +76,7 @@ def patch_regions(source: str) -> str:
         raise RuntimeError(f"Expected one upstream regionDefinitions block, found {len(matches)}; refusing to publish.")
     block = matches[0].group(2)
     taiwan_pattern = re.compile(
-        r"(\\{\\s*name:\\s*'台湾',.*?flag:\\s*)'🇹🇼'(,\\s*regex:.*?icon:\\s*)\\`\\$\\{iconBaseUrl\\}Taiwan\\.svg\\`(,\\s*\\})",
+        r"(\{\s*name:\s*'台湾',.*?flag:\s*)'🇹🇼'(,\s*regex:.*?icon:\s*)\`\$\{iconBaseUrl\}Taiwan\.svg\`(,\s*\})",
         re.S,
     )
     block, count = taiwan_pattern.subn(
@@ -89,7 +89,7 @@ def patch_regions(source: str) -> str:
         raise RuntimeError(f"Expected exactly one Taiwan flag/icon entry, found {count}; refusing to publish.")
     if "name: '韩国'" in block or "name: 'VIP'" in block:
         raise RuntimeError("Personal region additions already exist upstream; refusing duplicate insertion.")
-    updated_block = block.rstrip() + "\\n" + ADDITIONAL_REGIONS.rstrip()
+    updated_block = block.rstrip() + "\n" + ADDITIONAL_REGIONS.rstrip()
     return source[:matches[0].start()] + matches[0].group(1) + updated_block + matches[0].group(3) + source[matches[0].end():]
 
 def main() -> None:
@@ -103,7 +103,7 @@ def main() -> None:
         raise RuntimeError("Could not identify upstream main commit SHA via git ls-remote.")
     generated = patch_regions(upstream)
     OUTPUT.write_text(generated, encoding="utf-8")
-    SHA_FILE.write_text(commit_sha + "\\n", encoding="utf-8")
+    SHA_FILE.write_text(commit_sha + "\n", encoding="utf-8")
     print(f"Generated {OUTPUT} from AIsouler/MyClash commit {commit_sha}")
 
 if __name__ == "__main__":
