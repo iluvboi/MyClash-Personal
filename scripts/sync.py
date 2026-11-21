@@ -175,6 +175,13 @@ def patch_options(source: str) -> str:
             block = updated
     return source[:match.start()] + block + source[match.end():]
 
+def replace_once(source: str, old: str, new: str, label: str) -> str:
+    count = source.count(old)
+    if count != 1:
+        raise RuntimeError(f"Expected exactly one {label} anchor, found {count}; refusing to publish.")
+    return source.replace(old, new, 1)
+
+
 def patch_regions(source: str) -> str:
     pattern = re.compile(r"//\s*定义地区策略组\s*\nconst\s+regionDefinitions\s*=\s*\[.*?\n\];(?=\s*\n//\s*定义倍率策略组)", re.S)
     matches = list(pattern.finditer(source))
