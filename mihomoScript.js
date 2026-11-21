@@ -1,3 +1,4 @@
+const bettboxRegions = ["香港","日本","美国","新加坡","台湾","韩国","加拿大","印度","德国","法国","澳大利亚","英国","VIP"];
 /**
  * mihomo配置覆写脚本（全量版）
  * 作者：AIsouler
@@ -283,7 +284,7 @@ const homeRegionDefinitions = [
 ];
 
 // 全部策略组定义（地区 + 倍率 + 家宽），统一用于节点匹配与归类
-const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];
+const allRegionDefinitions = [...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];
 
 // Rule Providers 通用配置
 const ruleProviderCommonDomain = {
@@ -981,7 +982,7 @@ function filterAndNormalizeProxies(config) {
 
     if (!filterNonRegionProxiesEnabled) return true;
 
-    const isRegionProxy = getMatchedRegions(proxy.name).some((region) => regionDefinitions.includes(region));
+    const isRegionProxy = getMatchedRegions(proxy.name).some((region) => activeRegionDefinitions.includes(region));
 
     return isRegionProxy || !excludeFilter.test(matchableName);
   });
@@ -1068,7 +1069,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
 
   for (const proxy of [...filteredProxies, ...customProxies]) {
     const matchedRegions = getMatchedRegions(proxy.name);
-    const isRegionProxy = matchedRegions.some((region) => regionDefinitions.includes(region));
+    const isRegionProxy = matchedRegions.some((region) => activeRegionDefinitions.includes(region));
 
     for (const region of matchedRegions) {
       regionGroups[region.name].push(proxy.name);
