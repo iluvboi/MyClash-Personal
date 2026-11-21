@@ -14,7 +14,7 @@ SHA_FILE = Path("upstream.sha")
 
 REGION_BLOCK = r"""
 // Personal region definitions maintained by MyClash-Personal.
-const regionDefinitions = [
+const allAvailableRegions = [
   {
     name: '香港',
     flag: '🇭🇰',
@@ -93,6 +93,13 @@ const regionDefinitions = [
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/Airport.svg',
   },
 ];
+
+// Respect the region checklist injected/maintained by Bettbox.
+const enabledRegionNames =
+  typeof bettboxRegions !== 'undefined' && Array.isArray(bettboxRegions)
+    ? new Set(bettboxRegions)
+    : new Set(allAvailableRegions.map((region) => region.name));
+const regionDefinitions = allAvailableRegions.filter((region) => enabledRegionNames.has(region.name));
 """
 
 # These are the user's saved settings mapped to names used by current upstream.
@@ -168,6 +175,10 @@ def main() -> None:
     if not isinstance(commit_sha, str) or len(commit_sha) < 40:
         raise RuntimeError("Could not identify upstream commit SHA.")
     generated = patch_regions(patch_options(upstream))
+    # Bettbox's settings page reads this array to display the selectable region checklist.
+    regions_header = 'const bettboxRegions = ["香港","日本","美国","新加坡","台湾","韩国","加拿大","印度","德国","法国","澳大利亚","英国","VIP"];\n'
+    if "const bettboxRegions" not in generated:
+        generated = regions_header + generated
     required = ["'🏝️'", "name: '香港'", "name: 'VIP'", "优先国内DNS加速: true"]
     for item in required:
         if item not in generated:
