@@ -190,7 +190,19 @@ def main() -> None:
     if not isinstance(commit_sha, str) or len(commit_sha) < 40:
         raise RuntimeError("Could not identify upstream commit SHA.")
     generated = patch_regions(patch_options(upstream))
-    required = ["const regionDefinitions = [", "default: true", "const activeRegionDefinitions = regionDefinitions.filter", "common/AsiaMap.svg", "name: 'VIP'", "优先国内DNS加速: true"]
+
+    # Bettbox reads this top-level declaration to render its region checklist.
+    region_header = 'const bettboxRegions = ["香港","日本","美国","新加坡","台湾","韩国","加拿大","印度","德国","法国","澳大利亚","英国","VIP"];' + chr(10)
+    if "const bettboxRegions" not in generated:
+        generated = region_header + generated
+
+    # Apply the selected regions consistently to strategy groups and proxy matching.
+    generated = generated.replace(
+        "const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
+        "const allRegionDefinitions = [...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];",
+    )
+    generated = generated.replace("regionDefinitions.includes(region)", "activeRegionDefinitions.includes(region)")
+    required = ["const bettboxRegions = [", "const regionDefinitions = [", "default: true", "const activeRegionDefinitions = regionDefinitions.filter", "const allRegionDefinitions = [...activeRegionDefinitions", "activeRegionDefinitions.includes(region)", "common/AsiaMap.svg", "name: 'VIP'", "优先国内DNS加速: true"]
     for item in required:
         if item not in generated:
             raise RuntimeError(f"Generated script is missing required customization: {item}")
