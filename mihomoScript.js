@@ -1,3 +1,4 @@
+const bettboxRegions = ["香港","日本","美国","新加坡","台湾","韩国","加拿大","印度","德国","法国","澳大利亚","英国","VIP"];
 /**
  * mihomo配置覆写脚本（全量版）
  * 作者：AIsouler
@@ -150,7 +151,7 @@ const iconBaseUrl = 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/
 const ruleSetBaseUrl = 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/';
 
 // Personal region definitions maintained by MyClash-Personal.
-const regionDefinitions = [
+const allAvailableRegions = [
   {
     name: '香港',
     flag: '🇭🇰',
@@ -229,6 +230,13 @@ const regionDefinitions = [
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/Airport.svg',
   },
 ];
+
+// Respect the region checklist injected/maintained by Bettbox.
+const enabledRegionNames =
+  typeof bettboxRegions !== 'undefined' && Array.isArray(bettboxRegions)
+    ? new Set(bettboxRegions)
+    : new Set(allAvailableRegions.map((region) => region.name));
+const regionDefinitions = allAvailableRegions.filter((region) => enabledRegionNames.has(region.name));
 
 // 定义倍率策略组
 const lowRateRegionName = '低倍率节点';
