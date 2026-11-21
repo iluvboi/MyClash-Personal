@@ -54,6 +54,9 @@ jobs:
       - name: Run personal regression tests
         run: node Test/run-personal-tests.js
 
+      - name: Run upstream regression tests
+        run: node Test/run-upstream-regression-tests.js
+
       - name: Commit generated script when changed
         run: |
           git add mihomoScript.js upstream.sha
