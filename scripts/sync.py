@@ -68,7 +68,7 @@ def get_text(url: str) -> str:
 
 def patch_regions(source: str) -> str:
     pattern = re.compile(
-        r"(// 定义地区策略组\s*\nconst\s+regionDefinitions\s*=\s*\\[)(.*?)(\n\\];)",
+        r"(// 定义地区策略组\s*\nconst\s+regionDefinitions\s*=\s*\[)(.*?)(\n\];)",
         re.S,
     )
     matches = list(pattern.finditer(source))
