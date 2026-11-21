@@ -238,7 +238,7 @@ const regionDefinitions = [
   {
     name: 'VIP',
     regex: /(?<![A-Za-z])VIP(?![A-Za-z])/i,
-    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/Airport.svg',
+    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/VIP.svg',
     default: true,
   },
 ];
