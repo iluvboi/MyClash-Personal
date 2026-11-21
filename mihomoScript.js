@@ -19,8 +19,8 @@ const Compatible_With_Bettbox = { ruleOptionsEnable: true };
 const ruleOptionsEnable = {
   // 基础策略组
   手动选择: true, // 是否启用手动选择策略组
-  自动选择: false, // 是否启用自动选择策略组
-  负载均衡: false, // 是否启用负载均衡策略组
+  自动选择: true, // 是否启用自动选择策略组
+  负载均衡: true, // 是否启用负载均衡策略组
 
   // 以下为分流策略配置
   FCM: true, // GoogleFCM服务
@@ -38,8 +38,8 @@ const ruleOptionsEnable = {
   Line: true, // Line通讯软件
   Netflix: true, // Netflix视频平台
   Emby: true, // Emby媒体服务
-  PikPak: false, // PikPak网盘服务
-  Spotify: false, // Spotify音乐服务
+  PikPak: true, // PikPak网盘服务
+  Spotify: true, // Spotify音乐服务
   Crypto: true, // 加密货币相关服务
   PayPal: true, // PayPal支付服务
   Patreon: true, // Patreon创作者赞助平台
@@ -48,19 +48,18 @@ const ruleOptionsEnable = {
 
   // 以下为非分流策略配置
   极简国内外分流模式: false, // 是否启用极简国内外分流模式
-  生成地区自动选择组: false, // 是否生成地区自动选择策略组
+  生成地区自动选择组: true, // 是否生成地区自动选择策略组
   隐藏地区手动选择组: false, // 是否隐藏地区手动选择策略组
-  生成高低倍率组: false, // 是否生成低倍率/高倍率策略组
-  生成家宽节点组: false, // 是否生成家宽（住宅/原生 IP）节点策略组
+  生成高低倍率组: true, // 是否生成低倍率/高倍率策略组
+  生成家宽节点组: true, // 是否生成家宽（住宅/原生 IP）节点策略组
   分流组添加所有节点: false, // 是否为分流策略组添加所有节点
   过滤低倍率节点: false, // 是否过滤低倍率节点
   过滤高倍率节点: false, // 是否过滤高倍率节点
   过滤非地区节点: true, // 是否过滤非地区节点
-  屏蔽代理QUIC流量: true, // 是否屏蔽非国内目标的 QUIC 流量
+  屏蔽代理QUIC流量: false, // 是否屏蔽非国内目标的 QUIC 流量
   代理IPV4优先: false, // 是否将订阅节点统一为 IPv4 优先（与“代理IPV6优先”同时开启时不生效）
   代理IPV6优先: false, // 是否将订阅节点统一为 IPv6 优先（与“代理IPV4优先”同时开启时不生效）
   链式代理: false, // 是否启用链式代理（自定义节点作为落地节点，经“链式中转”策略组中转）
-  优先国内DNS加速: true,
 };
 
 // 定义前置规则
@@ -149,108 +148,88 @@ const iconBaseUrl = 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/
 // 规则集 URL 公共前缀
 const ruleSetBaseUrl = 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/';
 
-// Personal region definitions maintained by MyClash-Personal.
+// 定义地区策略组
 const regionDefinitions = [
   {
     name: '香港',
     flag: '🇭🇰',
     regex: /🇭🇰|香港|(?<![A-Za-z])HKG?(?![A-Za-z])|hong\s*kong/i,
-    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/Hong_Kong.svg',
-    default: true,
+    icon: `${iconBaseUrl}HongKong.svg`,
   },
   {
     name: '日本',
     flag: '🇯🇵',
     regex: /🇯🇵|日本|东京|大阪|京都|(?<![A-Za-z])JPN?(?![A-Za-z])|japan/i,
-    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/Japan.svg',
-    default: true,
+    icon: `${iconBaseUrl}Japan.svg`,
   },
   {
     name: '美国',
     flag: '🇺🇸',
-    regex: /🇺🇸|美国|纽约|洛杉矶|旧金山|芝加哥|休斯顿|迈阿密|西雅图|波士顿|华盛顿|拉斯维加斯|圣何塞|(?<![A-Za-z])USA?(?![A-Za-z])|america|united\s*states/i,
-    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/United_States.svg',
-    default: true,
+    regex:
+      /🇺🇸|美国|纽约|洛杉矶|旧金山|芝加哥|休斯顿|迈阿密|西雅图|波士顿|华盛顿|拉斯维加斯|圣何塞|(?<![A-Za-z])USA?(?![A-Za-z])|america|united\s*states/i,
+    icon: `${iconBaseUrl}America.svg`,
   },
   {
     name: '新加坡',
     flag: '🇸🇬',
     regex: /🇸🇬|新加坡|狮城|(?<![A-Za-z])SGP?(?![A-Za-z])|singapore/i,
-    icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/Singapore.svg',
-    default: true,
+    icon: `${iconBaseUrl}Singapore.svg`,
   },
   {
     name: '台湾',
     flag: '🏝️',
-    regex: /🏝️|台湾|台北|高雄|(?<![A-Za-z])TWN?(?![A-Za-z])|taiwan/i,
+    regex: /🇹🇼|台湾|台北|高雄|(?<![A-Za-z])TWN?(?![A-Za-z])|taiwan/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/AsiaMap.svg',
-    default: true,
   },
+
   {
     name: '韩国',
     flag: '🇰🇷',
     regex: /🇰🇷|(?<!北)(?:韩国|南韩)|首尔|汉城|仁川|春川|釜山|大邱|大田|光州|济州|(?<![A-Za-z])(?:KR|KOR|ICN|(?<!North\s*)(?<!NORTH\s*)(?:[Kk]orea|KOREA)(?:n|N)?|[Ss]eoul|SEOUL|[Ii]ncheon|INCHEON|[Cc]huncheon|CHUNCHEON|[Bb]usan|BUSAN|[Pp]usan|PUSAN|[Jj]eju|JEJU)(?![A-Za-z])/,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/South_Korea.svg',
-    default: true,
   },
   {
     name: '加拿大',
     flag: '🇨🇦',
     regex: /🇨🇦|加拿大|多伦多|温哥华|蒙特利尔|渥太华|卡尔加里|(?<![A-Za-z])(?:CA|CAN)(?![A-Za-z])|canada/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/Canada.svg',
-    default: true,
   },
   {
     name: '印度',
     flag: '🇮🇳',
     regex: /🇮🇳|印度|孟买|新德里|德里|班加罗尔|金奈|海得拉巴|(?<![A-Za-z])IND(?![A-Za-z])|india/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/India.svg',
-    default: true,
   },
   {
     name: '德国',
     flag: '🇩🇪',
     regex: /🇩🇪|德国|柏林|法兰克福|慕尼黑|汉堡|杜塞尔多夫|(?<![A-Za-z])(?:DE|DEU|GER)(?![A-Za-z])|germany/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/Germany.svg',
-    default: true,
   },
   {
     name: '法国',
     flag: '🇫🇷',
     regex: /🇫🇷|法国|巴黎|马赛|里昂|(?<![A-Za-z])(?:FR|FRA)(?![A-Za-z])|france/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/France.svg',
-    default: true,
   },
   {
     name: '澳大利亚',
     flag: '🇦🇺',
     regex: /🇦🇺|澳大利亚|澳洲|悉尼|墨尔本|布里斯班|珀斯|阿德莱德|(?<![A-Za-z])(?:AU|AUS)(?![A-Za-z])|australia/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/Australia.svg',
-    default: true,
   },
   {
     name: '英国',
     flag: '🇬🇧',
     regex: /🇬🇧|英国|伦敦|曼彻斯特|伯明翰|格拉斯哥|爱丁堡|(?<![A-Za-z])(?:UK|GB|GBR)(?![A-Za-z])|united\s*kingdom|great\s*britain|britain|england/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/flag/United_Kingdom.svg',
-    default: true,
   },
   {
     name: 'VIP',
     regex: /(?<![A-Za-z])VIP(?![A-Za-z])/i,
     icon: 'https://cdn.jsdelivr.net/gh/appshubcc/Qure_Style_SVG@main/icon/svg/common/VIP.svg',
-    default: true,
   },
 ];
-
-// Respect the region checklist injected by Bettbox.
-const enabledRegionNames =
-  typeof bettboxRegions !== 'undefined' && Array.isArray(bettboxRegions)
-    ? new Set(bettboxRegions)
-    : null;
-const activeRegionDefinitions = regionDefinitions.filter((region) =>
-  enabledRegionNames ? enabledRegionNames.has(region.name) : region.default,
-);
 
 // 定义倍率策略组
 const lowRateRegionName = '低倍率节点';
@@ -283,7 +262,7 @@ const homeRegionDefinitions = [
 ];
 
 // 全部策略组定义（地区 + 倍率 + 家宽），统一用于节点匹配与归类
-const allRegionDefinitions = [...activeRegionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];
+const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];
 
 // Rule Providers 通用配置
 const ruleProviderCommonDomain = {
@@ -981,7 +960,7 @@ function filterAndNormalizeProxies(config) {
 
     if (!filterNonRegionProxiesEnabled) return true;
 
-    const isRegionProxy = getMatchedRegions(proxy.name).some((region) => activeRegionDefinitions.includes(region));
+    const isRegionProxy = getMatchedRegions(proxy.name).some((region) => regionDefinitions.includes(region));
 
     return isRegionProxy || !excludeFilter.test(matchableName);
   });
@@ -1068,7 +1047,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
 
   for (const proxy of [...filteredProxies, ...customProxies]) {
     const matchedRegions = getMatchedRegions(proxy.name);
-    const isRegionProxy = matchedRegions.some((region) => activeRegionDefinitions.includes(region));
+    const isRegionProxy = matchedRegions.some((region) => regionDefinitions.includes(region));
 
     for (const region of matchedRegions) {
       regionGroups[region.name].push(proxy.name);
