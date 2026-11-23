@@ -827,9 +827,23 @@ const serviceConfigs = [
         path: './ruleset/category-ads.mrs',
         'path-in-bundle': 'geo/geosite/category-ads.mrs',
       },
+      awa_ads: {
+        ...ruleProviderCommonDomain,
+        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs',
+        path: './ruleset/awa_ads.mrs',
+      },
+      anti_ad: {
+        ...ruleProviderCommonDomain,
+        url: 'https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs',
+        path: './ruleset/anti_ad.mrs',
+      },
     },
     icon: `${iconBaseUrl}AdBlock.svg`,
-    rules: ['RULE-SET,category-ads,AdBlock'],
+    rules: [
+      'RULE-SET,category-ads,AdBlock',
+      'RULE-SET,awa_ads,AdBlock',
+      'RULE-SET,anti_ad,AdBlock',
+    ],
   },
 ];
 
@@ -1164,6 +1178,19 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     const autoSelectGroupEnabled = ruleOptionsEnable.自动选择;
 
     const finalRuleProviders = { ...baseRuleProviders };
+    const adBlockService = serviceConfigs.find((svc) => svc.name === 'AdBlock');
+    const adBlockEnabled = Boolean(ruleOptionsEnable.AdBlock && adBlockService);
+    const adBlockGroup = adBlockEnabled
+      ? {
+          ...selectBaseOption,
+          name: adBlockService.name,
+          proxies: ['REJECT', 'REJECT-DROP', 'PASS'],
+          icon: adBlockService.icon,
+        }
+      : null;
+    if (adBlockEnabled) {
+      Object.assign(finalRuleProviders, adBlockService.providers || {});
+    }
 
     const defaultGroup = {
       ...selectBaseOption,
@@ -1202,10 +1229,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
 
     return {
       globalGroup,
-      functionalGroups: [defaultGroup, ...(autoSelectGroupEnabled ? [autoSelectGroup] : [])],
+      functionalGroups: [
+        defaultGroup,
+        ...(autoSelectGroupEnabled ? [autoSelectGroup] : []),
+        ...(adBlockGroup ? [adBlockGroup] : []),
+      ],
       functionalRules: [],
       functionalIpRules: [],
-      priorityRules: [],
+      priorityRules: adBlockEnabled ? [...(adBlockService.priority ? adBlockService.rules || [] : [])] : [],
       finalRuleProviders,
       chainGroup,
       directGroup,
