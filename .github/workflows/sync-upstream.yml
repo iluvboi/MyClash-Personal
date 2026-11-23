@@ -38,6 +38,9 @@ jobs:
       - name: Generate customized script
         run: python scripts/sync.py
 
+      - name: Audit exact upstream patch boundary
+        run: python Test/test_sync_audit.py
+
       - name: Check JavaScript syntax
         run: node --check mihomoScript.js
 
