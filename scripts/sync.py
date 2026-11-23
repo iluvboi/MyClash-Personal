@@ -76,7 +76,7 @@ def patch_regions(source: str) -> str:
         raise RuntimeError(f"Expected one upstream regionDefinitions block, found {len(matches)}; refusing to publish.")
     block = matches[0].group(2)
     taiwan_pattern = re.compile(
-        r"(\{\s*name:\s*'台湾',.*?flag:\s*)'🇹🇼'(,\s*regex:.*?icon:\s*)\`\$\{iconBaseUrl\}Taiwan\.svg\`(,\s*\})",
+        r"(\{\s*name:\s*'台湾',.*?flag:\s*)'🇹🇼'(,\s*regex:.*?icon:\s*)`\$\{iconBaseUrl\}Taiwan\.svg`(,\s*\})",
         re.S,
     )
     block, count = taiwan_pattern.subn(
@@ -98,17 +98,17 @@ def patch_adblock(source: str) -> str:
     old_service = """    providers: {
       'category-ads': {
         ...ruleProviderCommonDomain,
-        url: \`\${ruleSetBaseUrl}geosite/category-ads.mrs\`,
+        url: `${ruleSetBaseUrl}geosite/category-ads.mrs`,
         path: './ruleset/category-ads.mrs',
         'path-in-bundle': 'geo/geosite/category-ads.mrs',
       },
     },
-    icon: \`\${iconBaseUrl}AdBlock.svg\`,
+    icon: `${iconBaseUrl}AdBlock.svg`,
     rules: ['RULE-SET,category-ads,AdBlock'],"""
     new_service = """    providers: {
       'category-ads': {
         ...ruleProviderCommonDomain,
-        url: \`\${ruleSetBaseUrl}geosite/category-ads.mrs\`,
+        url: `${ruleSetBaseUrl}geosite/category-ads.mrs`,
         path: './ruleset/category-ads.mrs',
         'path-in-bundle': 'geo/geosite/category-ads.mrs',
       },
@@ -123,7 +123,7 @@ def patch_adblock(source: str) -> str:
         path: './ruleset/anti_ad.mrs',
       },
     },
-    icon: \`\${iconBaseUrl}AdBlock.svg\`,
+    icon: `${iconBaseUrl}AdBlock.svg`,
     rules: [
       'RULE-SET,category-ads,AdBlock',
       'RULE-SET,awa_ads,AdBlock',
