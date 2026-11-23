@@ -175,6 +175,13 @@ def patch_adblock(source: str) -> str:
     source = source.replace(old_return, new_return, 1)
     return source
 
+
+def audit_generated(upstream: str, generated: str) -> None:
+    """Fail closed unless the output is byte-for-byte the approved patch of upstream."""
+    expected = patch_adblock(patch_regions(upstream))
+    if generated != expected:
+        raise RuntimeError("Generated script contains changes outside the approved region and AdBlock patches.")
+
 def main() -> None:
     upstream = get_text(UPSTREAM_RAW)
     result = subprocess.run(
@@ -185,6 +192,7 @@ def main() -> None:
     if not isinstance(commit_sha, str) or len(commit_sha) != 40:
         raise RuntimeError("Could not identify upstream main commit SHA via git ls-remote.")
     generated = patch_adblock(patch_regions(upstream))
+    audit_generated(upstream, generated)
     OUTPUT.write_text(generated, encoding="utf-8")
     SHA_FILE.write_text(commit_sha + "\n", encoding="utf-8")
     print(f"Generated {OUTPUT} from AIsouler/MyClash commit {commit_sha}")
