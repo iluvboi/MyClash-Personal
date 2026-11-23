@@ -92,6 +92,89 @@ def patch_regions(source: str) -> str:
     updated_block = block.rstrip() + "\n" + ADDITIONAL_REGIONS.rstrip()
     return source[:matches[0].start()] + matches[0].group(1) + updated_block + matches[0].group(3) + source[matches[0].end():]
 
+
+def patch_adblock(source: str) -> str:
+    """Add only the two approved MRS providers and enable AdBlock in minimal mode."""
+    old_service = """    providers: {
+      'category-ads': {
+        ...ruleProviderCommonDomain,
+        url: \`\${ruleSetBaseUrl}geosite/category-ads.mrs\`,
+        path: './ruleset/category-ads.mrs',
+        'path-in-bundle': 'geo/geosite/category-ads.mrs',
+      },
+    },
+    icon: \`\${iconBaseUrl}AdBlock.svg\`,
+    rules: ['RULE-SET,category-ads,AdBlock'],"""
+    new_service = """    providers: {
+      'category-ads': {
+        ...ruleProviderCommonDomain,
+        url: \`\${ruleSetBaseUrl}geosite/category-ads.mrs\`,
+        path: './ruleset/category-ads.mrs',
+        'path-in-bundle': 'geo/geosite/category-ads.mrs',
+      },
+      awa_ads: {
+        ...ruleProviderCommonDomain,
+        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs',
+        path: './ruleset/awa_ads.mrs',
+      },
+      anti_ad: {
+        ...ruleProviderCommonDomain,
+        url: 'https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs',
+        path: './ruleset/anti_ad.mrs',
+      },
+    },
+    icon: \`\${iconBaseUrl}AdBlock.svg\`,
+    rules: [
+      'RULE-SET,category-ads,AdBlock',
+      'RULE-SET,awa_ads,AdBlock',
+      'RULE-SET,anti_ad,AdBlock',
+    ],"""
+    if source.count(old_service) != 1:
+        raise RuntimeError("Expected exactly one unchanged upstream AdBlock service block; refusing to publish.")
+    source = source.replace(old_service, new_service, 1)
+
+    old_minimal = """    const finalRuleProviders = { ...baseRuleProviders };
+
+    const defaultGroup = {"""
+    new_minimal = """    const finalRuleProviders = { ...baseRuleProviders };
+    const adBlockService = serviceConfigs.find((svc) => svc.name === 'AdBlock');
+    const adBlockEnabled = Boolean(ruleOptionsEnable.AdBlock && adBlockService);
+    const adBlockGroup = adBlockEnabled
+      ? {
+          ...selectBaseOption,
+          name: adBlockService.name,
+          proxies: ['REJECT', 'REJECT-DROP', 'PASS'],
+          icon: adBlockService.icon,
+        }
+      : null;
+    if (adBlockEnabled) {
+      Object.assign(finalRuleProviders, adBlockService.providers || {});
+    }
+
+    const defaultGroup = {"""
+    if source.count(old_minimal) != 1:
+        raise RuntimeError("Expected exactly one minimal-mode provider initialization; refusing to publish.")
+    source = source.replace(old_minimal, new_minimal, 1)
+
+    old_return = """      functionalGroups: [defaultGroup, ...(autoSelectGroupEnabled ? [autoSelectGroup] : [])],
+      functionalRules: [],
+      functionalIpRules: [],
+      priorityRules: [],
+      finalRuleProviders,"""
+    new_return = """      functionalGroups: [
+        defaultGroup,
+        ...(autoSelectGroupEnabled ? [autoSelectGroup] : []),
+        ...(adBlockGroup ? [adBlockGroup] : []),
+      ],
+      functionalRules: [],
+      functionalIpRules: [],
+      priorityRules: adBlockEnabled ? [...(adBlockService.priority ? adBlockService.rules || [] : [])] : [],
+      finalRuleProviders,"""
+    if source.count(old_return) != 1:
+        raise RuntimeError("Expected exactly one minimal-mode return block; refusing to publish.")
+    source = source.replace(old_return, new_return, 1)
+    return source
+
 def main() -> None:
     upstream = get_text(UPSTREAM_RAW)
     result = subprocess.run(
@@ -101,7 +184,7 @@ def main() -> None:
     commit_sha = result.stdout.split()[0] if result.stdout.split() else None
     if not isinstance(commit_sha, str) or len(commit_sha) != 40:
         raise RuntimeError("Could not identify upstream main commit SHA via git ls-remote.")
-    generated = patch_regions(upstream)
+    generated = patch_adblock(patch_regions(upstream))
     OUTPUT.write_text(generated, encoding="utf-8")
     SHA_FILE.write_text(commit_sha + "\n", encoding="utf-8")
     print(f"Generated {OUTPUT} from AIsouler/MyClash commit {commit_sha}")
