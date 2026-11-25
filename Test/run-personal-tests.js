@@ -18,11 +18,11 @@ assert(source.includes("flag: '🏝️'"), 'Taiwan flag customization missing');
 assert(source.includes('common/AsiaMap.svg'), 'Taiwan icon customization missing');
 assert(!source.includes('activeRegionDefinitions'), 'upstream region-selection logic must remain unchanged');
 
-assert(source.includes("AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs"), 'AWAvenue ads+privacy MRS source missing');
-assert(source.includes("privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"), 'anti-AD MRS source missing');
+assert(source.includes("AWAvenue-Ads-Rule-Clash.mrs"), 'AWAvenue full-protection MRS source missing');
+assert(!source.includes("AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs"), 'AWAvenue must use the full-protection variant');
+assert(!source.includes("privacy-protection-tools/anti-ad.github.io"), 'stale anti-AD provider must be removed');
 assert(source.includes("'RULE-SET,category-ads,AdBlock'"), 'original category-ads rule missing');
 assert(source.includes("'RULE-SET,awa_ads,AdBlock'"), 'AWAvenue rule missing');
-assert(source.includes("'RULE-SET,anti_ad,AdBlock'"), 'anti-AD rule missing');
 
 // Execute the script in an isolated context and smoke-test main() with a minimal subscription.
 const sandbox = { console };
@@ -56,7 +56,7 @@ function adBlockSmokeTest(minimalMode) {
   const group = out['proxy-groups'].find((g) => g.name === 'AdBlock');
   assert(group, `AdBlock policy group missing (minimalMode=${minimalMode})`);
   assert.deepEqual(Array.from(group.proxies), ['REJECT', 'REJECT-DROP', 'PASS']);
-  for (const name of ['category-ads', 'awa_ads', 'anti_ad']) {
+  for (const name of ['category-ads', 'awa_ads']) {
     assert(out['rule-providers'][name], `missing provider: ${name} (minimalMode=${minimalMode})`);
     assert(out.rules.includes(`RULE-SET,${name},AdBlock`), `missing rule: ${name} (minimalMode=${minimalMode})`);
   }
@@ -64,5 +64,5 @@ function adBlockSmokeTest(minimalMode) {
 adBlockSmokeTest(false);
 adBlockSmokeTest(true);
 
-console.log('Personal checks passed: syntax, 13 regions, Taiwan customization, three AdBlock providers, normal/minimal mode runtime checks, and main() smoke test.');
+console.log('Personal checks passed: syntax, 13 regions, Taiwan customization, two AdBlock providers, normal/minimal mode runtime checks, and main() smoke test.');
 
