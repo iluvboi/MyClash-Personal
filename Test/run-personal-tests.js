@@ -58,7 +58,7 @@ function adBlockSmokeTest(minimalMode) {
   const group = out['proxy-groups'].find((g) => g.name === 'AdBlock');
   assert(group, `AdBlock policy group missing (minimalMode=${minimalMode})`);
   assert.deepEqual(Array.from(group.proxies), ['REJECT', 'REJECT-DROP', 'PASS']);
-  for (const name of ['category-ads', 'awa_ads']) {
+  for (const name of ['category-ads', 'adblockmihomo']) {
     assert(out['rule-providers'][name], `missing provider: ${name} (minimalMode=${minimalMode})`);
     assert(out.rules.includes(`RULE-SET,${name},AdBlock`), `missing rule: ${name} (minimalMode=${minimalMode})`);
   }
