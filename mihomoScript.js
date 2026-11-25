@@ -829,20 +829,14 @@ const serviceConfigs = [
       },
       awa_ads: {
         ...ruleProviderCommonDomain,
-        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs',
+        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs',
         path: './ruleset/awa_ads.mrs',
-      },
-      anti_ad: {
-        ...ruleProviderCommonDomain,
-        url: 'https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs',
-        path: './ruleset/anti_ad.mrs',
       },
     },
     icon: `${iconBaseUrl}AdBlock.svg`,
     rules: [
       'RULE-SET,category-ads,AdBlock',
       'RULE-SET,awa_ads,AdBlock',
-      'RULE-SET,anti_ad,AdBlock',
     ],
   },
 ];
