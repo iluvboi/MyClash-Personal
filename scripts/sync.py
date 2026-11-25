@@ -94,7 +94,7 @@ def patch_regions(source: str) -> str:
 
 
 def patch_adblock(source: str) -> str:
-    """Add only the two approved MRS providers and enable AdBlock in minimal mode."""
+    """Add the full AWAvenue MRS provider and enable AdBlock in minimal mode."""
     old_service = """    providers: {
       'category-ads': {
         ...ruleProviderCommonDomain,
@@ -114,20 +114,14 @@ def patch_adblock(source: str) -> str:
       },
       awa_ads: {
         ...ruleProviderCommonDomain,
-        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs',
+        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs',
         path: './ruleset/awa_ads.mrs',
-      },
-      anti_ad: {
-        ...ruleProviderCommonDomain,
-        url: 'https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs',
-        path: './ruleset/anti_ad.mrs',
       },
     },
     icon: `${iconBaseUrl}AdBlock.svg`,
     rules: [
       'RULE-SET,category-ads,AdBlock',
       'RULE-SET,awa_ads,AdBlock',
-      'RULE-SET,anti_ad,AdBlock',
     ],"""
     if source.count(old_service) != 1:
         raise RuntimeError("Expected exactly one unchanged upstream AdBlock service block; refusing to publish.")
