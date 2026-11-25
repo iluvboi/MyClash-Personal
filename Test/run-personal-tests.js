@@ -18,11 +18,13 @@ assert(source.includes("flag: '🏝️'"), 'Taiwan flag customization missing');
 assert(source.includes('common/AsiaMap.svg'), 'Taiwan icon customization missing');
 assert(!source.includes('activeRegionDefinitions'), 'upstream region-selection logic must remain unchanged');
 
-assert(source.includes("AWAvenue-Ads-Rule-Clash.mrs"), 'AWAvenue full-protection MRS source missing');
-assert(!source.includes("AWAvenue-Ads-Rule-Clash-No.Unwelcome.mrs"), 'AWAvenue must use the full-protection variant');
+assert(source.includes("https://raw.githubusercontent.com/217heidai/adblockfilters/dist/adblockmihomo.mrs"), '217heidai rule 10 MRS source missing');
+assert(source.includes("interval: 28800"), '217heidai rule 10 must refresh every 8 hours');
+assert(!source.includes("AWAvenue-Ads-Rule"), 'standalone AWAvenue provider must be removed');
+assert(!source.includes("awa_ads"), 'standalone AWAvenue provider ID must be removed');
 assert(!source.includes("privacy-protection-tools/anti-ad.github.io"), 'stale anti-AD provider must be removed');
 assert(source.includes("'RULE-SET,category-ads,AdBlock'"), 'original category-ads rule missing');
-assert(source.includes("'RULE-SET,awa_ads,AdBlock'"), 'AWAvenue rule missing');
+assert(source.includes("'RULE-SET,adblockmihomo,AdBlock'"), '217heidai rule 10 rule missing');
 
 // Execute the script in an isolated context and smoke-test main() with a minimal subscription.
 const sandbox = { console };
@@ -64,5 +66,5 @@ function adBlockSmokeTest(minimalMode) {
 adBlockSmokeTest(false);
 adBlockSmokeTest(true);
 
-console.log('Personal checks passed: syntax, 13 regions, Taiwan customization, two AdBlock providers, normal/minimal mode runtime checks, and main() smoke test.');
+console.log('Personal checks passed: syntax, 13 regions, Taiwan customization, category-ads plus 217heidai rule 10 providers, normal/minimal mode runtime checks, and main() smoke test.');
 
