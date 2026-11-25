@@ -827,16 +827,17 @@ const serviceConfigs = [
         path: './ruleset/category-ads.mrs',
         'path-in-bundle': 'geo/geosite/category-ads.mrs',
       },
-      awa_ads: {
+      adblockmihomo: {
         ...ruleProviderCommonDomain,
-        url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs',
-        path: './ruleset/awa_ads.mrs',
+        interval: 28800,
+        url: 'https://raw.githubusercontent.com/217heidai/adblockfilters/dist/adblockmihomo.mrs',
+        path: './ruleset/adblockmihomo.mrs',
       },
     },
     icon: `${iconBaseUrl}AdBlock.svg`,
     rules: [
       'RULE-SET,category-ads,AdBlock',
-      'RULE-SET,awa_ads,AdBlock',
+      'RULE-SET,adblockmihomo,AdBlock',
     ],
   },
 ];
